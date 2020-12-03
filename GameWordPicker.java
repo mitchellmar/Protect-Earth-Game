@@ -8,13 +8,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class GameWordPicker extends GameScene {
-private  ArrayList<String> totype = new ArrayList<>();
-private Random rand= new Random();
 
-//pick method that returns a random word from the text file
-	public Word pick() {
-		Scanner input = null;
-        
+	private ArrayList<String> totype = new ArrayList<>();
+	private Random rand = new Random();
+	private Scanner input;
+
+	public GameWordPicker() {
 		try {
 			input = new Scanner(new File("words.txt"));
 		} catch (FileNotFoundException e) {
@@ -24,11 +23,10 @@ private Random rand= new Random();
 		while (input.hasNextLine()) {
 			totype.add(input.nextLine());
 		}
-        
-		Word word = new Word();
-		word.str = totype.get(rand.nextInt(totype.size()));
-		word.move = rand.nextInt(4) + 1;
-		return word;
+	}
+
+	public String pick() {
+		return totype.get(rand.nextInt(totype.size()));
 	}
 
 }

@@ -15,3 +15,206 @@
         ○ Pick words from GameWordPicker and create GameItemWords
         ○ Update score in GameItemScore , typed text in GameItemTyped etc.
  */
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import models.GameItemWord;
+
+public class GameScene extends JPanel {
+
+    private static final long serialVersionUID = 2381970222661612660L;
+    // Const variables
+    private static final int AST = 120;
+    private static final int DELAY = 10;
+    private static final String EARTH_URL = "earth.png";
+
+    // Game components
+    private Timer timer;
+    private BufferedImage earth;
+    private GameWordPicker wordPicker;
+    private ArrayList<GameItemWord> itemWords = new ArrayList<>();
+
+    // Game states
+    private Random random = new Random();
+    private String typed = "";
+    private int score = 0;
+    private boolean started = false;
+    private boolean ended = false;
+
+    public GameScene() {
+        loadComponents();
+        configureGameScene();
+        setEventListeners();
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(earth, getWidth() - 100, 0, earth.getWidth() * getHeight() / earth.getHeight(), getHeight(), null);
+        Font font = new Font("default", Font.BOLD, 12);
+        g.setFont(font);
+
+        if (!started) {
+            menuStage(g);
+            return;
+        }
+
+        if (ended) {
+            endStage(g);
+            return;
+        }
+
+        for (int i = 0; i < 5; i++) {
+            GameItemWord itemWord = itemWords.get(i);
+            int height = getHeight() * (i + 1) / 6;
+            
+            if (this.getComponent(i) instanceof GameItemWord) {
+                ((GameItemWord) this.getComponent(i)).setLocation(((GameItemWord) this.getComponent(i)).getStrX(), height - AST / 2);
+            }
+        }
+
+        g.setColor(Color.GREEN);
+        g.drawString("Typed word: " + typed, 10, getHeight() - 10);
+        g.setColor(Color.RED);
+        g.drawString("Score: " + score, getWidth() - 80, 10);
+    }
+
+    private void loadComponents() {
+        try {
+            earth = ImageIO.read(new File(EARTH_URL));
+        } catch (IOException ext) {
+        }
+
+        GameWordPicker wordPicker = new GameWordPicker();
+
+        for (int i = 0; i < 5; i++) {
+            GameItemWord itemWord = new GameItemWord(wordPicker.pick());
+            itemWords.add(itemWord);
+            this.add(itemWord);
+        }
+    }
+
+    private void configureGameScene() {
+        setLayout(null);
+        setBackground(Color.BLACK);
+        setFocusable(true);
+        requestFocusInWindow();
+    }
+
+    private void setEventListeners() {
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                char keyChar = event.getKeyChar();
+
+                if (!Character.isAlphabetic(keyChar) && keyChar != ' ') {
+                    return;
+                }
+
+                if (keyChar == ' ') {
+                    typed = "";
+
+                    if (!started) {
+                        started = true;
+                    }
+
+                    if (ended) {
+                        ended = false;
+                        score = 0;
+                    }
+                } else {
+                    typed += keyChar;
+                }
+
+                boolean same = false;
+                for (int i = 0; i < 5; i++) {
+                    GameItemWord itemWord = itemWords.get(i);
+
+                    if (typed.equals(itemWord.getText())) {
+                        same = true;
+                        score += 10;
+                        itemWord = new GameItemWord(wordPicker.pick());
+                        if (score >= 100) {
+                            ended = true;
+                        }
+                    }
+                }
+
+                if (same) {
+                    typed = "";
+                }
+                repaint();
+            }
+        });
+        ActionListener updater = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                if (!started || ended) {
+                    return;
+                }
+
+                for (int i = 0; i < 5; i++) {
+                    GameItemWord itemWord = itemWords.get(i);
+                    itemWord.setStrX();
+
+                    if (itemWord.getStrX() >= getWidth()) {
+                        score -= 5;
+
+                        if (score <= -50) {
+                            ended = true;
+                        }
+
+                        updateItems(itemWord, i);
+                    }
+                }
+
+                repaint();
+            }
+        };
+
+        timer = new Timer(DELAY, updater);
+        timer.start();
+    }
+
+    private void menuStage(Graphics g) {
+        g.setColor(Color.BLUE);
+        g.drawString("PROTECT EARTH BY TYPING WORDS ON ASTEROIDS!", 200, 200);
+        g.setColor(Color.RED);
+        g.drawString("IF THEY HIT EARTH, YOU LOSE POINTS!", 200, 250);
+        g.setColor(Color.GREEN);
+        g.drawString("PLEASE HIT SPACE TO START GAME!", 200, 300);
+    }
+
+    private void endStage(Graphics g) {
+        if (score >= 100) {
+            g.drawString("YOU WON! THANK YOU FOR PROTECTING EARTH!", 200, 200);
+        } else {
+            g.drawString("YOU LOST! PLEASE TRY AGAIN...", 200, 200);
+        }
+        g.setColor(Color.RED);
+        g.drawString("YOUR SCORE WAS " + score, 200, 250);
+        g.setColor(Color.GREEN);
+        g.drawString("PLEASE HIT SPACE TO START GAME!", 200, 300);
+    }
+
+    private void updateItems(GameItemWord itemWord, int index) {
+        itemWords.add(itemWord);
+        this.remove(index);
+        this.add(itemWord, index);
+    }
+}
