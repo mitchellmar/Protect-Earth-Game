@@ -21,7 +21,7 @@ private Random rand= new Random();
 			e.printStackTrace();
 		}
 
-		while (input.hasNextLine()){
+		while (input.hasNextLine()) {
 			totype.add(input.nextLine());
 		}
         
