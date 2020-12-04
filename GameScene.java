@@ -54,6 +54,7 @@ public class GameScene extends JPanel {
     private int score = 0;
     private boolean started = false;
     private boolean ended = false;
+    private boolean same = false;
 
     public GameScene() {
         loadComponents();
@@ -123,27 +124,20 @@ public class GameScene extends JPanel {
                 if (keyChar == ' ') {
                     typed = "";
                     if (!started) {
+
                         started = true;
                     }
                     if (ended) {
+                        loadComponents();
                         ended = false;
                         score = 0;
                     }
                 } else {
                     typed += keyChar;
                 }
-                boolean same = false;
-                for (int i = 0; i < itemWords.size(); i++) {
-                    GameItemWord itemWord = itemWords.get(i);
-                    if (typed.equals(itemWord.getText())) {
-                        same = true;
-                        score += 10;
-                        itemWord = new GameItemWord(wordPicker.pick());
-                        update(itemWord, i);
-                        if (score >= 100) {
-                            ended = true;
-                        }
-                    }
+                same = false;
+                for (int i = 0; i < getComponentSize(); i++) {
+                    handleKeyPressed(i);
                 }
                 if (same) {
                     typed = "";
@@ -196,6 +190,22 @@ public class GameScene extends JPanel {
         this.add(itemWord, index);
     }
 
+    private int getComponentSize() {
+        return this.getComponents().length;
+    }
+
+    private void handleKeyPressed(int i) {
+        if (typed.equals(((GameItemWord) this.getComponent(i)).getText())) {
+            same = true;
+            score += 10;
+            GameItemWord itemWord = new GameItemWord(wordPicker.pick());
+            update(itemWord, i);
+            if (score >= 100) {
+                ended = true;
+            }
+        }
+    }
+
     private void menuStage(Graphics g) {
         g.setColor(Color.BLUE);
         g.drawString("PROTECT EARTH BY TYPING WORDS ON ASTEROIDS!", 200, 200);
@@ -216,6 +226,8 @@ public class GameScene extends JPanel {
         for (int i = 0; i < this.getComponents().length; i++) {
             if (this.getComponent(i) instanceof GameItemWord) {
                 this.remove(i);
+                itemWords.remove(i);
+                i--;
             }
         }
 
