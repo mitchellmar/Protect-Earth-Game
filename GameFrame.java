@@ -10,9 +10,8 @@ public class GameFrame extends JFrame {
         setSize(1000, 600);
         setTitle("Protect Earth");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        panel = new TilePanel();
+        panel = new GamePanel();
         add(panel, BorderLayout.CENTER);
     }
   
 }
-
