@@ -1,0 +1,2 @@
+# Ignore class files committed to the codebase
+*.class
