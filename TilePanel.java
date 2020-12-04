@@ -16,10 +16,9 @@ import models.GameItemWord;
 public class TilePanel extends JPanel {
     private String typed = "";
     private int score = 0;
-    private ArrayList<Word> words = new ArrayList<>();
+    private ArrayList<GameItemWord> itemWords = new ArrayList<>();
     private ArrayList<String> totype = new ArrayList<>();
     private Random rand = new Random();
-    private BufferedImage asteroid1;
     private BufferedImage earth;
     private boolean started = false;
     private boolean ended = false;
@@ -33,7 +32,6 @@ public class TilePanel extends JPanel {
     public TilePanel() {
         setLayout(null);
         try {
-            asteroid1 = ImageIO.read(new File("asteroid1.png"));
             earth = ImageIO.read(new File("earth.png"));
         } catch (IOException e) {
         }
@@ -42,29 +40,22 @@ public class TilePanel extends JPanel {
         setFocusable(true);
         requestFocusInWindow();
         for (int i = 0; i < 5; i++) {
-            words.add(pick());
+            GameItemWord itemWord = new GameItemWord(pick());
+
+            itemWords.add(itemWord);
+            this.add(itemWord);
         }
         int DELAY = 10;
-        GameItemWord itemWord = new GameItemWord("HELLO");
-        itemWord.setBounds(100, 100, itemWord.getPreferredSize().width, itemWord.getPreferredSize().height);
-        this.add(itemWord);
         ActionListener updater = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if (!started || ended) {
                     return;
                 }
-                for (int i = 0; i < words.size(); i++) {
-                    Word word = words.get(i);
-                    word.strX += word.move;
-                    if (word.strX >= getWidth()) {
-                        score -= 5;
-                        if (score <= -50) {
-                            ended = true;
-                        }
-                        word = pick();
-                        words.set(i, word);
-                    }
+                for (int i = 0; i < 5; i++) {
+                    updateGameItemAt(i);
+
                 }
+
                 repaint();
             }
         };
@@ -73,7 +64,7 @@ public class TilePanel extends JPanel {
 
     }
 
-    Word pick() {
+    String pick() {
         Scanner input = null;
         try {
             input = new Scanner(new File("words.txt"));
@@ -88,7 +79,7 @@ public class TilePanel extends JPanel {
         Word word = new Word();
         word.str = totype.get(rand.nextInt(totype.size()));
         word.move = rand.nextInt(4) + 1;
-        return word;
+        return totype.get(rand.nextInt(totype.size()));
     }
 
     public void paintComponent(Graphics g) {
@@ -120,19 +111,46 @@ public class TilePanel extends JPanel {
             return;
         }
 
-        FontMetrics metrics = g.getFontMetrics(font);
-        g.setColor(Color.WHITE);
-        for (int i = 0; i < words.size(); i++) {
-            Word word = words.get(i);
-            int height = getHeight() * (i + 1) / (words.size() + 1);
-            int ast = 120;
-            g.drawImage(asteroid1, word.strX - ast / 2, height - ast / 2, ast, ast, null);
-            g.drawString(word.str, word.strX - metrics.stringWidth(word.str) / 2, height);
+        for (int i = 0; i < this.getComponents().length; i++) {
+            GameItemWord itemWord = itemWords.get(i);
+            int height = getHeight() * (i + 1) / 6;
+            this.getComponent(i).setBounds(
+                ((GameItemWord) this.getComponent(i)).getStrX() - 120 / 2,
+                height - 120 / 2,
+                this.getComponent(i).getPreferredSize().width,
+                this.getComponent(i).getPreferredSize().height
+            );
         }
         g.setColor(Color.GREEN);
         g.drawString("Typed word: " + typed, 10, getHeight() - 10);
         g.setColor(Color.RED);
         g.drawString("Score: " + score, getWidth() - 80, 10);
+    }
+
+    private void updateGameItemAt(int index) {
+        GameItemWord iWord = ((GameItemWord) this.getComponent(index));
+        iWord.setStrX();
+
+        if (iWord.getStrX() >= getWidth()) {
+            score -= 5;
+
+            if (score <= -50) {
+                ended = true;
+            }
+            iWord = new GameItemWord(pick());
+            int height = getHeight() * (index + 1) / (itemWords.size() + 1);
+            iWord.setBounds(- rand.nextInt(100), height, iWord.getPreferredSize().width, iWord.getPreferredSize().height);
+
+            itemWords.set(index, iWord);
+            this.remove(index);
+            this.add(iWord, index);
+        }
+    }
+
+
+    private void update(GameItemWord itemWord, int index) {
+        this.remove(index);
+        this.add(itemWord, index);
     }
 
     class PacManKeyListener extends KeyAdapter {
@@ -154,13 +172,13 @@ public class TilePanel extends JPanel {
                 typed += keyChar;
             }
             boolean same = false;
-            for (int i = 0; i < words.size(); i++) {
-                Word word = words.get(i);
-                if (typed.equals(word.str)) {
+            for (int i = 0; i < itemWords.size(); i++) {
+                GameItemWord itemWord = itemWords.get(i);
+                if (typed.equals(itemWord.getText())) {
                     same = true;
                     score += 10;
-                    word = pick();
-                    words.set(i, word);
+                    itemWord = new GameItemWord(pick());
+                    update(itemWord, i);
                     if (score >= 100) {
                         ended = true;
                     }
