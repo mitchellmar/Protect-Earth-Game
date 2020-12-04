@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class GameWordPicker extends GameScene {
+public class GameWordPicker {
+
+	private static final long serialVersionUID = 7456833108090465278L;
 
 	private ArrayList<String> totype = new ArrayList<>();
 	private Random rand = new Random();

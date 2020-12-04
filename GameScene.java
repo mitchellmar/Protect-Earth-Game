@@ -38,7 +38,6 @@ import models.GameItemWord;
 public class GameScene extends JPanel {
 
     private static final long serialVersionUID = 2381970222661612660L;
-    // Const variables
     private static final int AST = 120;
     private static final int DELAY = 10;
     private static final String EARTH_URL = "earth.png";
@@ -68,7 +67,6 @@ public class GameScene extends JPanel {
         g.drawImage(earth, getWidth() - 100, 0, earth.getWidth() * getHeight() / earth.getHeight(), getHeight(), null);
         Font font = new Font("default", Font.BOLD, 12);
         g.setFont(font);
-
         if (!started) {
             menuStage(g);
             return;
@@ -79,15 +77,11 @@ public class GameScene extends JPanel {
             return;
         }
 
-        for (int i = 0; i < 5; i++) {
-            GameItemWord itemWord = itemWords.get(i);
+        for (int i = 0; i < this.getComponents().length; i++) {
             int height = getHeight() * (i + 1) / 6;
-            
-            if (this.getComponent(i) instanceof GameItemWord) {
-                ((GameItemWord) this.getComponent(i)).setLocation(((GameItemWord) this.getComponent(i)).getStrX(), height - AST / 2);
-            }
+            this.getComponent(i).setBounds(((GameItemWord) this.getComponent(i)).getStrX() - 120 / 2, height - 120 / 2,
+                    this.getComponent(i).getPreferredSize().width, this.getComponent(i).getPreferredSize().height);
         }
-
         g.setColor(Color.GREEN);
         g.drawString("Typed word: " + typed, 10, getHeight() - 10);
         g.setColor(Color.RED);
@@ -100,13 +94,15 @@ public class GameScene extends JPanel {
         } catch (IOException ext) {
         }
 
-        GameWordPicker wordPicker = new GameWordPicker();
+        wordPicker = new GameWordPicker();
 
         for (int i = 0; i < 5; i++) {
             GameItemWord itemWord = new GameItemWord(wordPicker.pick());
+
             itemWords.add(itemWord);
             this.add(itemWord);
         }
+
     }
 
     private void configureGameScene() {
@@ -121,18 +117,14 @@ public class GameScene extends JPanel {
             @Override
             public void keyPressed(KeyEvent event) {
                 char keyChar = event.getKeyChar();
-
                 if (!Character.isAlphabetic(keyChar) && keyChar != ' ') {
                     return;
                 }
-
                 if (keyChar == ' ') {
                     typed = "";
-
                     if (!started) {
                         started = true;
                     }
-
                     if (ended) {
                         ended = false;
                         score = 0;
@@ -140,21 +132,19 @@ public class GameScene extends JPanel {
                 } else {
                     typed += keyChar;
                 }
-
                 boolean same = false;
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < itemWords.size(); i++) {
                     GameItemWord itemWord = itemWords.get(i);
-
                     if (typed.equals(itemWord.getText())) {
                         same = true;
                         score += 10;
                         itemWord = new GameItemWord(wordPicker.pick());
+                        update(itemWord, i);
                         if (score >= 100) {
                             ended = true;
                         }
                     }
                 }
-
                 if (same) {
                     typed = "";
                 }
@@ -169,18 +159,7 @@ public class GameScene extends JPanel {
                 }
 
                 for (int i = 0; i < 5; i++) {
-                    GameItemWord itemWord = itemWords.get(i);
-                    itemWord.setStrX();
-
-                    if (itemWord.getStrX() >= getWidth()) {
-                        score -= 5;
-
-                        if (score <= -50) {
-                            ended = true;
-                        }
-
-                        updateItems(itemWord, i);
-                    }
+                    updateGameItemAt(i);
                 }
 
                 repaint();
@@ -189,6 +168,32 @@ public class GameScene extends JPanel {
 
         timer = new Timer(DELAY, updater);
         timer.start();
+    }
+
+    private void updateGameItemAt(int index) {
+        GameItemWord iWord = ((GameItemWord) this.getComponent(index));
+        iWord.setStrX();
+
+        if (iWord.getStrX() >= getWidth()) {
+            score -= 5;
+
+            if (score <= -50) {
+                ended = true;
+            }
+            iWord = new GameItemWord(wordPicker.pick());
+            int height = getHeight() * (index + 1) / (itemWords.size() + 1);
+            iWord.setBounds(-random.nextInt(100), height, iWord.getPreferredSize().width,
+                    iWord.getPreferredSize().height);
+
+            itemWords.set(index, iWord);
+            this.remove(index);
+            this.add(iWord, index);
+        }
+    }
+
+    private void update(GameItemWord itemWord, int index) {
+        this.remove(index);
+        this.add(itemWord, index);
     }
 
     private void menuStage(Graphics g) {
@@ -206,15 +211,17 @@ public class GameScene extends JPanel {
         } else {
             g.drawString("YOU LOST! PLEASE TRY AGAIN...", 200, 200);
         }
+
+        // Clear words after ended
+        for (int i = 0; i < this.getComponents().length; i++) {
+            if (this.getComponent(i) instanceof GameItemWord) {
+                this.remove(i);
+            }
+        }
+
         g.setColor(Color.RED);
         g.drawString("YOUR SCORE WAS " + score, 200, 250);
         g.setColor(Color.GREEN);
         g.drawString("PLEASE HIT SPACE TO START GAME!", 200, 300);
-    }
-
-    private void updateItems(GameItemWord itemWord, int index) {
-        itemWords.add(itemWord);
-        this.remove(index);
-        this.add(itemWord, index);
     }
 }
