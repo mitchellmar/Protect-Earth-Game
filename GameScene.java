@@ -51,7 +51,7 @@ public class GameScene extends JPanel {
     // Game states
     private Random random = new Random();
     private String typed = "";
-    private int score = 0;
+    private int score = 50;
     private boolean started = false;
     private boolean ended = false;
     private boolean same = false;
@@ -130,7 +130,7 @@ public class GameScene extends JPanel {
                     if (ended) {
                         loadComponents();
                         ended = false;
-                        score = 0;
+                        score = 50;
                     }
                 } else if (keyChar == '\b') {
                 	if (!typed.isEmpty()) {
@@ -175,7 +175,7 @@ public class GameScene extends JPanel {
         if (iWord.getStrX() >= getWidth()) {
             score -= 5;
 
-            if (score <= -50) {
+            if (score <= 0) {
                 ended = true;
             }
             iWord = new GameItemWord(wordPicker.pick());
