@@ -118,7 +118,7 @@ public class GameScene extends JPanel {
             @Override
             public void keyPressed(KeyEvent event) {
                 char keyChar = event.getKeyChar();
-                if (!Character.isAlphabetic(keyChar) && keyChar != ' ') {
+                if (!Character.isAlphabetic(keyChar) && keyChar != ' ' && keyChar != '\b') {
                     return;
                 }
                 if (keyChar == ' ') {
@@ -132,6 +132,10 @@ public class GameScene extends JPanel {
                         ended = false;
                         score = 0;
                     }
+                } else if (keyChar == '\b') {
+                	if (!typed.isEmpty()) {
+                		typed = typed.substring(0, typed.length() - 1);
+                	}
                 } else {
                     typed += keyChar;
                 }
