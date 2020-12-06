@@ -1,3 +1,6 @@
+/*
+GameMain is the main class used to launch the game
+*/
 
 public class GameMain {
 
