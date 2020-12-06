@@ -1,3 +1,6 @@
+/* 
+GameFrame creates the window for the game
+*/
 
 import javax.swing.*;
 import java.awt.*;
