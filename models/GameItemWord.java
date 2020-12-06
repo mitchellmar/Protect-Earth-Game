@@ -1,5 +1,5 @@
 /*
-Draws the game words, also includes getter and setter methods
+Draws the game words, draws the words on the asteriods, also includes getter and setter methods
 */
 
 package models;
