@@ -1,3 +1,7 @@
+/*
+Drwas the score, along with getter and setter methods for the score
+*/
+
 package models;
 
 import java.awt.Color;
