@@ -1,5 +1,5 @@
 /*
-Drwas the score, along with getter and setter methods for the score
+Draws the score, along with getter and setter methods for the score
 */
 
 package models;
