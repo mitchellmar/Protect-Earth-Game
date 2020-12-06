@@ -1,5 +1,6 @@
-/*GameWordPicker is a subclass of GameScene used to scan a list of words from a .txt 
-  file into an Arraylist and return a random word from that Arraylist.
+/*
+GameWordPicker is used to scan a list of words from a .txt file
+into an Arraylist and return a random word from that Arraylist.
 */
 
 import java.io.*;
