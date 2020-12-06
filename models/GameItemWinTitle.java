@@ -1,3 +1,7 @@
+/*
+Draws the winning title, includes a getter method for the score.
+*/
+
 package models;
 
 import java.awt.Color;
