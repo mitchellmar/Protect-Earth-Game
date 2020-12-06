@@ -1,3 +1,7 @@
+/*
+Draws the game words, also includes getter and setter methods
+*/
+
 package models;
 
 import java.awt.Color;
