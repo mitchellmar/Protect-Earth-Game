@@ -1,3 +1,7 @@
+/*
+Draws the Losing Title
+*/
+
 package models;
 
 import java.awt.Color;
