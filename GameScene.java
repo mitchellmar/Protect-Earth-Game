@@ -37,6 +37,7 @@ import models.GameItemWord;
 
 public class GameScene extends JPanel {
 
+    // Constant variables
     private static final long serialVersionUID = 2381970222661612660L;
     private static final int AST = 120;
     private static final int DELAY = 10;
@@ -133,9 +134,9 @@ public class GameScene extends JPanel {
                         score = 50;
                     }
                 } else if (keyChar == '\b') {
-                	if (!typed.isEmpty()) {
-                		typed = typed.substring(0, typed.length() - 1);
-                	}
+                    if (!typed.isEmpty()) {
+                        typed = typed.substring(0, typed.length() - 1);
+                    }
                 } else {
                     typed += keyChar;
                 }
@@ -240,4 +241,5 @@ public class GameScene extends JPanel {
         g.setColor(Color.GREEN);
         g.drawString("PLEASE HIT SPACE TO START GAME!", 200, 300);
     }
+
 }

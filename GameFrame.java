@@ -3,7 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameFrame extends JFrame {
-  
+
     private GameScene panel;
 
     public GameFrame() {
@@ -13,5 +13,5 @@ public class GameFrame extends JFrame {
         panel = new GameScene();
         add(panel, BorderLayout.CENTER);
     }
-  
+
 }
