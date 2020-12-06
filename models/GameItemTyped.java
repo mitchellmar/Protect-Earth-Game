@@ -1,3 +1,7 @@
+/*
+Draws the user's typing input, also includes getter and setter methods
+*/
+
 package models;
 
 import java.awt.Color;
